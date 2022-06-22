@@ -9,12 +9,12 @@ function trackViewedProduct(payload) {
   var _learnq = window._learnq || [];
   var product = {
     Name: payload.title,
-    ProductID: payload.id.substring(payload.id.lastIndexOf('/') + 1),
+    ProductID: payload.product.id.substring(payload.product.id.lastIndexOf('/') + 1),
     Categories:
-      payload.collections == undefined
+      payload.product.collections == undefined
         ? null
-        : payload.collections.map((a) => a.title),
-    ImageURL: payload.featuredImage.url,
+        : payload.product.collections.edges.map((a) => a.node.title),
+    ImageURL: payload.selectedVariant.image.url,
     URL: payload.url,
     Brand: payload.vendor,
     Price: payload.selectedVariant.priceV2.amount,
@@ -27,12 +27,12 @@ function trackViewedItem(payload) {
   var _learnq = window._learnq || [];
   var item = {
     Title: payload.title,
-    ItemId: payload.id.substring(payload.id.lastIndexOf('/') + 1),
+    ItemId: payload.product.id.substring(payload.product.id.lastIndexOf('/') + 1),
     Categories:
       payload.collections == undefined
         ? null
-        : payload.collections.map((a) => a.title),
-    ImageUrl: payload.featuredImage.url,
+        : payload.product.collections.edges.map((a) => a.node.title),
+    ImageUrl: payload.selectedVariant.image.url,
     Url: payload.url,
     Metadata: {
       Brand: payload.vendor,
@@ -44,11 +44,13 @@ function trackViewedItem(payload) {
 }
 
 function trackAddToCart(payload) {
+  console.info("Added to Cart");
+  console.info(payload);
   var _learnq = window._learnq || [];
   var cart = {
-    total_price: payload.cart.estimatedCost.totalAmount.amount,
-    $value: payload.cart.estimatedCost.totalAmount.amount,
-    original_total_price: payload.cart.estimatedCost.subtotalAmount,
+    total_price: payload.cart.cost.totalAmount.amount,
+    $value: payload.cart.cost.totalAmount.amount,
+    original_total_price: payload.cart.cost.subtotalAmount.amount,
     items: payload.cart.lines,
   };
 

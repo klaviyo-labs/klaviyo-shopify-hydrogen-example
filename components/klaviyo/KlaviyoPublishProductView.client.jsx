@@ -1,13 +1,14 @@
 import {useEffect} from 'react';
-import {useProduct, ClientAnalytics} from '@shopify/hydrogen';
+import {useProductOptions, ClientAnalytics} from '@shopify/hydrogen';
 
-export default function KlaviyoPublishProductView() {
-  const product = useProduct();
+export default function KlaviyoPublishProductView(product) {
+  const variant = useProductOptions();
+  const payload = {...product, ...variant};
   useEffect(() => {
     ClientAnalytics.publish(
       ClientAnalytics.eventNames.VIEWED_PRODUCT,
       true,
-      product,
+      payload,
     );
   });
   return null;

@@ -13,10 +13,10 @@ Copy the `klaviyo` folder into the `src/components` directory of your root proje
 
 ## Adding the Initial Script
 
-In `src/components/Layout.server.jsx` import the KlaviyoOnsite component and add at the end of the `<LocalizationProvider />` tag:
+In `src/App.server.jsx` import the KlaviyoOnsite component and add at the end of the `<LocalizationProvider />` tag:
 
 ```javascript
-import KlaviyoOnsite from './klaviyo/KlaviyoOnsite.client';
+import KlaviyoOnsite from '~/components/klaviyo/KlaviyoOnsite.client';
 // Omitted
 export default function Layout({children, hero}) {
     // Omitted
@@ -31,21 +31,24 @@ export default function Layout({children, hero}) {
 
 ## Adding Product Publishing for `Viewed Product` and `Viewed Item` Tracking
 
-The example code makes use of [Hydrogen Analytics](https://shopify.dev/custom-storefronts/hydrogen/framework/analytics). `VIEWED_PRODUCT` event to be triggered, which can be done with Hydrogen's built in `ClientAnalytics`. For example in `src/components/ProductDetails.client.jsx` add the following function and add to the end of `ProductProvider`:
+The example code makes use of [Hydrogen Analytics](https://shopify.dev/custom-storefronts/hydrogen/framework/analytics)and uses the `VIEWED_PRODUCT` event notification to be triggered, which can be done with Hydrogen's built in `ClientAnalytics`. For example in `src/routes/products/[handle].server.jsx` add the following function and add to the end of `ProductProvider`:
 
 ```javascript
-import KlaviyoPublishProductView from './klaviyo/KlaviyoPublishProductView.client';
+import KlaviyoPublishProductView from '~/components/klaviyo/KlaviyoPublishProductView.client';
 // Omitted
-export default function ProductDetails({product}) {
+export default function Product() {
     // Omitted
     return (
-    <>
-        <ProductProvider data={product} initialVariantId={initialVariant.id}>
-            // Omitted
-            <KlaviyoPublishProductView />
-        </ProductProvider>
-    </>
-    );
+        <Layout>
+            <Suspense>
+                <Seo type="product" data={product} />
+            </Suspense>
+            <ProductOptionsProvider data={product}>
+                // Omitted
+                <KlaviyoPublishProductView product={product} />
+            </ProductOptionsProvider>
+        </Layout>
+    );            
 }
 ```
 
@@ -79,18 +82,17 @@ const QUERY = gql`
 ```
 
 ## Identifying Users
-Klaviyo has multiple ways to identify users for onsite tracking. One such way is when the account details pages is accessed/the user logs in or creates an account. In `src/components/account/AccountDetails.server.jsx` add the `KlaviyoIdentify` component:
+Klaviyo has multiple ways to identify users for onsite tracking. One such way is when the account details pages is accessed or the user logs in/creates an account. In `src/routes/account/index.server.jsx` add the `KlaviyoIdentify` component:
 
 ```javascript
-import KlaviyoIdentify from '../klaviyo/KlaviyoIdentify.client';
+import KlaviyoIdentify from '~/components/klaviyo/KlaviyoIdentify.client';
 // Omitted
-
-export default function AccountDetails({customerAccessToken}) {
+function AuthenticatedAccount({customer,}) {
     // Omitted
     return (
         <Layout>
             // Omitted
-        <KlaviyoIdentify customer={customer} />
+            <KlaviyoIdentify customer={customer} />
         </Layout>
     );
 }

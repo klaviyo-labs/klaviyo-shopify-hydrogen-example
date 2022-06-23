@@ -44,8 +44,6 @@ function trackViewedItem(payload) {
 }
 
 function trackAddToCart(payload) {
-  console.info("Added to Cart");
-  console.info(payload);
   var _learnq = window._learnq || [];
   var cart = {
     total_price: payload.cart.cost.totalAmount.amount,
